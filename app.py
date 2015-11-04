@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request
 from flask import url_for, redirect
 from database import *
+from jsonConstants import *
 import flask
 
 def make_app():
@@ -31,7 +32,7 @@ def query_events():
     res = []
     for event in events:
         result = {}
-        print "event is "+ event
+        #print "event is "+ event
         for i in event.__dict__:
             if i[0] == '_':
                 continue
@@ -53,7 +54,7 @@ def query_modules():
     res = []
     for module in modules:
         result = {}
-        print "event is "+ module
+        #print "event is "+ module
         for i in module.__dict__:
             if i[0] == '_':
                 continue
@@ -67,6 +68,28 @@ def query_modules():
 
     return flask.jsonify(**r)
 
+@app.route('/createModules',methods=["POST"])
+def createClinic():
+    ## this one is dangerous, cause there should at least be some management part for the id management
+    ## this one assume that you already have an exclusive ID
+    ## in the new version you don't have to care about the ID number anymore cause it
+    ## can auto increment
+    data = request.form
+    if not data:
+        return "No data!"
+
+    module = Module()
+    if module_id in data:
+        module.module_id = data[module_id]
+    if module_name in data:
+        module.module_name = data[module_name]
+    if mod_details in data:
+        module.mod_details = data[mod_details]
+
+    session.add(module)
+    session.commit()
+
+    return "SUCCESS"
 
 
 if __name__ == '__main__':
